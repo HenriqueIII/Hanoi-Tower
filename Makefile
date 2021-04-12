@@ -3,13 +3,13 @@ CXX_FLAGS := -std=c++17 -ggdb
 
 BIN     := bin
 SRC     := src
-_SRCOBJ = Game.cpp Arena.cpp Status.cpp Obstacle.cpp Snake.cpp Mouse.cpp
+_SRCOBJ = Disk.cpp Game.cpp StackDisk.cpp Post.cpp #All cpp to debug
 SRCOBJ = $(patsubst %,$(SRC)/%,$(_SRCOBJ))
 INCLUDE := include/
 
 #Creates list of Objects to make
 ODIR 	:= obj
-_OBJ = Game.o Status.o Obstacle.o Arena.o Mouse.o Snake.o
+_OBJ = #Disk.o Post.o Game.o StackDisk.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 LIBRARIES   := lib
@@ -30,7 +30,7 @@ win32: $(OBJ)
 	copy pdcurses.dll bin
 
 linux: $(OBJ)
-	$(CXX) $(CXX_FLAGS) $(SRC)/$(EXECUTABLE).cpp $(OBJ) -I$(INCLUDE) -L$(LIBRARIES) -Wl,-rpath='$$ORIGIN' -o $(BIN)/$(EXECUTABLE) -lUtil -lncurses
+	$(CXX) $(CXX_FLAGS) $(SRC)/$(EXECUTABLE).cpp $(SRCOBJ) $(OBJ) -I$(INCLUDE) -L$(LIBRARIES) -Wl,-rpath='$$ORIGIN' -o $(BIN)/$(EXECUTABLE) -lUtil -lncursesw
 	cp $(LIBRARIES)/libUtil.so $(BIN)
 
 $(OBJ): $(ODIR)/%.o: $(SRC)/%.cpp

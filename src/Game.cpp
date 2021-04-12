@@ -1,44 +1,59 @@
 #include "Game.h"
-#include "utils/DeltaTime.h"
-#include <cassert>
-#include "Arena.h"
-#include "Status.h"
+#include "utils/Keyboard.h"
+#include "utils/Display.h"
 
-Game * Game::instance = new Game;
+#define POS_X_POST(i) (((Display::MAX_X-1)*(i*2+1))/6)
 
-bool Game::endGame() const{
-    return kbd.getLast()==27 || snake.isDead() || mice.noMore();
+Game::Game( int ndisks ):
+postA( ndisks, POS_X_POST( 0 ), dsp.BLACK ),
+postB( ndisks, POS_X_POST( 1 ), dsp.WHITE ),
+postC( ndisks, POS_X_POST( 2 ), dsp.RED ),
+numDisks( ndisks ),
+exit( false )   // flag de interrupção da animação
+{   // Cria os discos e insere-os na estaca A
+    Point pos( postA.getX(), (Post::BOTTOM)-(Disk::HEIGHT-1)/2 );
+    for ( int i=0; i<numDisks; ++i ) {
+        postA.push( new Disk( i,pos ) );
+        pos.setY( pos.getY()-Disk::HEIGHT );
+    }
 }
-Game::Game(){
-    assert(!instance);
-    instance = this;
-}
-void Game::play(){
-    // Tempo de um ciclo
-    const float SECONDS_PER_MOVE=0.4F;
-    // Definir temporizador
-    DeltaTime timer(SECONDS_PER_MOVE);
-    // Definir kbd em modo view
+
+void Game::play() {
+    dsp.windowClear();
+    Point lt( dsp.MIN_X, dsp.MIN_Y );   // left top
+    Point rb( dsp.MAX_X, dsp.MAX_Y );   // right Bottom
+    // Mostrar um rectangulo que ocupa todo o ecrã
+    Rect(lt, rb).show(ARENA_COLOR);
+    // Mostrar o rectangulo que forma a base das estacas
+    Rect base( lt.getX(), rb.getY()-BASE_HEIGHT+1, rb.getX(), rb.getY() );
+    base.show( BASE_COLOR );
+    // Mostrar os postes.
+    postA.show();
+    postB.show();
+    postC.show();
+    // Esperar a tecla Enter para iniciar animação
+    kbd.get();
+    // Colocar o teclado com get() não bloqueante
     kbd.setMode(Keyboard::VIEW);
-    STATUS->show();
-    ARENA->show();
-    snake.show();
-    mice.show();
-    do{
-        // Inicia a contagem de tempo
-        timer.start();
-        // Movimento unitário da cobra
-        snake.move();
-        // Aguardar fim de tempo
-        timer.wait();
-    }while(!endGame());
-    // Mensagem fim de jogo
-    STATUS->showAndWait("Game Over");
+    // Animação: Mover numDisks da estaca postA para a
+    // postB usando postC como auxiliar.
+    hanoi(numDisks,postA, postB, postC);
+    // A flag exit fica a true, se for actuada qualquer
+    // tecla durante a execução de hanoi()
+    while (!exit && kbd.get() != 10);
 }
-Game * Game::getInstance(){
-    assert(instance!=NULL);
-    return instance;
-}
-Mouse * Game::getMouse(){
-    return &mice;
+
+void Game::hanoi( int n, Post & orig, Post & dest, Post & aux ) {
+    // Se uma tecla foi ou está premida terminar
+    if (exit || kbd.get() != KEY_NONE) {
+        exit = true;
+        return;
+    }
+    if ( n==1 )
+        orig.showMove( dest ); // Movimentar de orig para dest
+    else {
+        hanoi( n-1, orig, aux, dest );
+        hanoi( 1, orig, dest, aux );
+        hanoi( n-1, aux, dest, orig );
+    }
 }
