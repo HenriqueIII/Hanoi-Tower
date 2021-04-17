@@ -3,13 +3,13 @@ CXX_FLAGS := -std=c++17 -ggdb
 
 BIN     := bin
 SRC     := src
-_SRCOBJ = Disk.cpp Game.cpp StackDisk.cpp Post.cpp #All cpp to debug
+_SRCOBJ = #All cpp to debug
 SRCOBJ = $(patsubst %,$(SRC)/%,$(_SRCOBJ))
 INCLUDE := include/
 
 #Creates list of Objects to make
 ODIR 	:= obj
-_OBJ = #Disk.o Post.o Game.o StackDisk.o
+_OBJ = #All objects to be included
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 LIBRARIES   := lib
