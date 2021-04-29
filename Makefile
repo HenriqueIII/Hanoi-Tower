@@ -3,13 +3,13 @@ CXX_FLAGS := -std=c++17 -ggdb
 
 BIN     := bin
 SRC     := src
-_SRCOBJ = #All cpp to debug
+_SRCOBJ = Tetris.cpp Piece.cpp Board.cpp Line.cpp
 SRCOBJ = $(patsubst %,$(SRC)/%,$(_SRCOBJ))
 INCLUDE := include/
 
 #Creates list of Objects to make
 ODIR 	:= obj
-_OBJ = #All objects to be included
+_OBJ = #Tetris.o Piece.o Board.o Line.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 LIBRARIES   := lib

@@ -1,9 +1,9 @@
 #include <iostream>
-#include <Rect.h>
+#include "Tetris.h"
 
 int main( int argc, char ** argv ) {
-    std::cout << "Hello World" << std::endl;   
-    Rect r1;
-    Point delta (0,0); 
+    Tetris game;
+    game.go();
     return 0;
 }
+

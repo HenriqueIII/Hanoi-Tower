@@ -21,7 +21,7 @@ public:
         // Cores claras
         BBLACK=8,BRED,BGREEN,BYELLOW,BBLUE,BMAGENTA,BCYAN,BWHITE
     };
-    enum {MIN_X=0,MIN_Y=0,MAX_X=79,MAX_Y=23};
+    enum {MIN_X=0,MIN_Y=0,MAX_X=79,MAX_Y=30};
     // Programar a carta de video em modo texto 80x24, 8 cores e ocultar o cursor.
     Display();
     // Repoe as cores e retira o bold
@@ -38,8 +38,10 @@ public:
     void setCursor(int x, int y);
     // Escrever o caracter chr na posição corrente do cursor.
     void putc(int chr);
+    void putc(wint_t chr);
     // Escrever o caracter chr no ponto de coordenadas (x,y) com a cor col.
     void putc(int x, int y, int chr, int col = WHITE);
+    void putc(int x, int y, wint_t chr, int col = WHITE);
     // Escrever a string str com inicio na posição corrente do cursor.
     void puts(const char * str);
     // Escrever o buffer com inicio na posição corrente do cursor.
@@ -51,6 +53,14 @@ public:
         return my_win;
     }
     ~Display();
+    void resizeWin(){
+        wclear(my_win);
+        clear();
+        wresize(my_win, MAX_Y, MAX_X);
+        mvwin(my_win, (LINES - MAX_Y+1)/2 , (COLS - MAX_X+1)/2);
+        refresh();
+        wrefresh(my_win);
+    }
 };
 
 extern Display dsp;
